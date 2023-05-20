@@ -14,9 +14,9 @@ int main() {
     std::string c{
             R"(To use the {fmt} library, add fmt/core.h, fmt/format.h, fmt/format-inl.h, src/format.cc and optionally other headers from)"};
 
-    unsigned long a1 = 0, a2 = 0, a3 = 0, a4 = 0;
-#define LOOP 6
-    std::string r1{}, r2{}, r3{}, r4{};
+    unsigned long a1 = 0, a2 = 0, a3 = 0, a4 = 0, a5 = 0;
+#define LOOP 4
+    std::string r1{}, r2{}, r3{}, r4{}, r5{};
 
     for (int i = 0; i < LOOP; ++i) {
         clock_gettime(CLOCK_MONOTONIC, &before);
@@ -47,13 +47,20 @@ int main() {
         clock_gettime(CLOCK_MONOTONIC, &after);
         a4 += after.tv_nsec - before.tv_nsec;
 
-
+        clock_gettime(CLOCK_MONOTONIC, &before);
+        r5 = a;
+        fmt::format_to(std::back_inserter(r5),
+                       FMT_COMPILE(R"({}Long text Long text Long text Long text{}Long text Long textLong text Long text{})"),
+                       a, b, c);
+        clock_gettime(CLOCK_MONOTONIC, &after);
+        a5 += after.tv_nsec - before.tv_nsec;
     }
 
-    std::cout << a1 / LOOP << " ns" << std::endl;
-    std::cout << a2 / LOOP << " ns" << std::endl;
-    std::cout << a3 / LOOP << " ns" << std::endl;
-    std::cout << a4 / LOOP << " ns" << std::endl;
+    std::cout << a1 / LOOP << " ns QString arg" << std::endl;
+    std::cout << a2 / LOOP << " ns fmt::format" << std::endl;
+    std::cout << a3 / LOOP << " ns fmt::format+FMT_COMPILE" << std::endl;
+    std::cout << a4 / LOOP << " ns just append" << std::endl;
+    std::cout << a5 / LOOP << " ns format_to + FMT_COMPILE" << std::endl;
 
     return 0;
 }
